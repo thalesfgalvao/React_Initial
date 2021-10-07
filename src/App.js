@@ -1,48 +1,46 @@
-import P from 'prop-types';
-import { Container } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './App.css';
 
-const App = () => {
-
-  const Post = ({post}) =>{
-    return(
-      <div key={post.id} className="post">
-        <h1>{post.title}</h1>
-        <p>{post.body}</p>
-      </div>
-    )
-  }
-
-  Post.propType = {
-    post: P.shape({
-    id: P.number,
-    title: P.string,
-    body: P.string,
-    }),
+  const globalState = {
+    title: 'Titulo do contexto',
+    body: 'O body do contexto',
+    coutner: 0,
   };
 
-  const [posts, setPosts] = useState([]);
+  const GlobalContex = React.createContext();
 
-  useEffect(() => {
-    setTimeout(function () {
-      fetch('https://jsonplaceholder.typicode.com/posts')
-      .then((r) => r.json())
-      .then((r) => setPosts(r));
-    }, 3000);
-  }, []);
+  // eslint-disable-next-line
+  const Header = ({children}) => {
+    return(
+      <header className="App-header">
+        <H1/>
+        <Paragraph/>
+      </header>
+    );
+  }
 
+  const H1 = () =>{
+    const theContext = useContext(GlobalContex);
+    const { contextState: { title } } = theContext;
+    return(
+      <h1>{title}</h1>
+    );
+  }
+  const Paragraph = () =>{
+    const theContext = useContext(GlobalContex);
+    const { contextState: { body } } = theContext;
+    return(
+      <p>{body}</p>
+    );
+  }
+
+  const App = () => {
+    const [contextState, setContextState] = useState(globalState);
   return (
     <div className="App">
-      <header className="App-header">
-        <Container>
-        {posts.length > 0 && 
-        posts.map((post) => {
-          return <Post key={post.id} post={post}/>
-        })}
-        {posts.length <= 0 && <p>Ainda não possui posts</p>}
-        </Container>
-      </header>
+      <GlobalContex.Provider value={{contextState, setContextState}}>
+        <Header/>
+      </GlobalContex.Provider>
     </div>
   );
 }
